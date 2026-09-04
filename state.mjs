@@ -1,0 +1,2 @@
+import {getState,putState,sessionUser,json} from "./_common.mjs";
+export default async req=>{const u=await sessionUser(req);if(!u)return json({error:"غير مصرح"},401);const s=await getState();if(req.method==="GET")return json({...s,user:u});if(req.method==="PUT"){if(u.role!=="main")return json({error:"الحساب الرئيسي فقط يمكنه تعديل حالة النظام مباشرة"},403);const body=await req.json();const merged={...s,...body,schemaVersion:3};await putState(merged);return json({...merged,user:u})}return json({error:"Method not allowed"},405)};

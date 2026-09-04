@@ -1,0 +1,2 @@
+import {getState,putState,requireUser,json} from "./_common.mjs";
+export default async req=>{try{await requireUser(req);const s=await getState();if(req.method!=="POST")return json({error:"Method not allowed"},405);const {name,birthYear,position,game}=await req.json();if(!name||!birthYear||!game)return json({error:"بيانات اللاعب ناقصة"},400);s.players=[...(s.players||[]),[name,String(birthYear),position||"—",game]];await putState(s);return json({players:s.players})}catch(e){return e instanceof Response?e:json({error:e.message||"خطأ"},500)}};

@@ -1,0 +1,3 @@
+import {getStore} from "@netlify/blobs";
+import {sessionUser,json} from "./_common.mjs";
+export default async req=>{const u=await sessionUser(req);if(!u)return json({error:"غير مصرح"},401);const key=new URL(req.url).searchParams.get("key");if(!key)return json({error:"المرفق غير محدد"},400);const store=getStore("jeddah-club-files");const x=await store.getWithMetadata(key,{type:"blob"});if(!x)return json({error:"المرفق غير موجود"},404);return new Response(x.data,{headers:{"content-type":x.metadata?.type||"application/octet-stream","content-disposition":`inline; filename="${encodeURIComponent(x.metadata?.name||"attachment")}"`}})};
